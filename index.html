@@ -10,11 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDK (versión compat) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* ===== ESTILOS COMPLETOS (los mismos que tenías) ===== */
+    /* ===== VARIABLES Y RESET ===== */
     :root {
       --color-short: #f97316;
       --color-medium: #10b981;
@@ -31,7 +31,13 @@
       --transition: all 0.2s ease;
       --touch-target: 44px;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background: linear-gradient(145deg, #f1f5f9 0%, #eef2f6 100%);
       font-family: 'Inter', sans-serif;
@@ -41,10 +47,11 @@
       align-items: center;
       justify-content: center;
       padding: 0.75rem;
-      line-height: 1.5;
+      line-height: 1.4;
     }
+
     .container {
-      max-width: 1440px;
+      max-width: 1600px;
       width: 100%;
       background: rgba(255,255,255,0.75);
       backdrop-filter: blur(2px);
@@ -52,12 +59,14 @@
       box-shadow: var(--shadow-md), 0 0 0 1px rgba(255,255,255,0.5) inset;
       padding: 1.5rem 1.5rem 2rem;
     }
+
+    /* ===== CABECERA ===== */
     .header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.8rem;
+      margin-bottom: 1.5rem;
       gap: 1rem;
     }
     h1 {
@@ -65,7 +74,7 @@
       align-items: center;
       gap: 0.75rem;
       font-weight: 700;
-      font-size: 1.8rem;
+      font-size: 1.9rem;
       letter-spacing: -0.02em;
       background: linear-gradient(135deg, #1e293b, #0f172a);
       -webkit-background-clip: text;
@@ -73,36 +82,39 @@
       background-clip: text;
     }
     h1 i {
-      background: #1e293b;
-      -webkit-text-fill-color: white;
       background: white;
       padding: 0.5rem;
       border-radius: 50%;
       box-shadow: var(--shadow-sm);
       color: #1e293b;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
     .family-badge {
       background: white;
-      padding: 0.5rem 1.2rem;
+      padding: 0.5rem 1.5rem;
       border-radius: 60px;
       font-weight: 500;
       box-shadow: var(--shadow-sm);
       color: var(--text-secondary);
       border: 1px solid var(--border-light);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       white-space: nowrap;
     }
     .family-badge i {
       color: #e11d48;
-      margin-right: 0.3rem;
+      margin-right: 0.4rem;
     }
+
+    /* ===== TABLERO 3 COLUMNAS ===== */
     .board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
       margin: 1.5rem 0 2rem;
+      align-items: stretch;
     }
+
+    /* COLUMNAS - más altas y optimizadas */
     .column {
       background: var(--card-bg);
       border-radius: var(--radius-md);
@@ -111,47 +123,52 @@
       flex-direction: column;
       border: 1px solid var(--border-light);
       transition: var(--transition);
-      height: 520px;
-      max-height: 70vh;
+      height: 75vh;        /* usa el 75% de la altura de la ventana */
+      max-height: 750px;    /* pero no más de 750px */
+      min-height: 500px;    /* mínimo para que no se aplaste */
     }
     .column:hover {
       box-shadow: var(--shadow-md);
       transform: translateY(-3px);
     }
+
+    /* CABECERA DE COLUMNA - más compacta */
     .column-header {
-      padding: 1.2rem 1.2rem 0.8rem;
+      padding: 0.9rem 1rem 0.6rem;
       border-bottom: 3px solid transparent;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.3rem;
     }
     .column-header h2 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
     .column-header h2 i {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
     .column.short .column-header { border-bottom-color: var(--color-short); }
     .column.medium .column-header { border-bottom-color: var(--color-medium); }
     .column.long .column-header { border-bottom-color: var(--color-long); }
+
     .count-badge {
       background: #f1f5f9;
       color: var(--text-secondary);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 0.2rem 0.7rem;
+      padding: 0.2rem 0.6rem;
       border-radius: 40px;
       letter-spacing: 0.3px;
     }
+
     .column-actions {
       display: flex;
-      gap: 0.3rem;
+      gap: 0.2rem;
       margin-left: auto;
     }
     .column-actions button {
@@ -159,12 +176,12 @@
       border: none;
       color: #94a3b8;
       cursor: pointer;
-      font-size: 1rem;
-      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
+      padding: 0.3rem 0.5rem;
       border-radius: 30px;
       transition: var(--transition);
-      min-width: var(--touch-target);
-      min-height: var(--touch-target);
+      min-width: 36px;
+      min-height: 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -176,16 +193,17 @@
     .column-actions button.clear-completed:hover {
       color: #10b981;
     }
+
+    /* CONTENEDOR DE LISTA - ocupa el máximo espacio */
     .list-container {
       flex: 1;
       overflow-y: auto;
-      padding: 0.5rem 0.8rem 0.8rem;
+      padding: 0.2rem 0.6rem 0.6rem;
       scrollbar-width: thin;
       scrollbar-color: #cbd5e1 #f1f5f9;
-      max-height: 300px;
     }
     .list-container::-webkit-scrollbar {
-      width: 6px;
+      width: 5px;
     }
     .list-container::-webkit-scrollbar-track {
       background: #f1f5f9;
@@ -195,33 +213,37 @@
       background: #cbd5e1;
       border-radius: 10px;
     }
+
+    /* LISTA DE TAREAS - items más compactos pero legibles */
     .item-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.4rem;
     }
     .item-list li {
       background: #ffffff;
       border: 1px solid #e9eef3;
-      border-radius: 60px;
-      padding: 0.7rem 0.8rem 0.7rem 1.2rem;
+      border-radius: 40px;
+      padding: 0.4rem 0.6rem 0.4rem 1rem;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.4rem;
       transition: var(--transition);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      min-height: 52px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      min-height: 44px; /* altura táctil mínima */
     }
     .item-list li:hover {
       background: #fcfdff;
       border-color: #cbd5e1;
     }
+
+    /* CHECKBOX - ligeramente más pequeño pero aún fácil de pulsar */
     .item-check {
       appearance: none;
       -webkit-appearance: none;
-      width: 1.6rem;
-      height: 1.6rem;
+      width: 1.4rem;
+      height: 1.4rem;
       border: 2px solid #cbd5e1;
       border-radius: 50%;
       background: white;
@@ -240,37 +262,36 @@
       content: "\f00c";
       font-family: "Font Awesome 6 Free";
       font-weight: 900;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: white;
     }
-    .item-check:hover {
-      border-color: #94a3b8;
-    }
+
     .item-text {
       flex: 1;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 500;
       color: var(--text-primary);
       word-break: break-word;
       transition: var(--transition);
-      padding: 0.2rem 0;
+      padding: 0.1rem 0;
     }
     .item-check:checked ~ .item-text {
       text-decoration: line-through;
       color: #94a3b8;
     }
+
     .delete-btn {
       background: transparent;
       border: none;
       color: #b9c9da;
       cursor: pointer;
-      font-size: 1.2rem;
-      padding: 0.5rem;
+      font-size: 1rem;
+      padding: 0.4rem;
       border-radius: 30px;
       transition: var(--transition);
       flex-shrink: 0;
-      min-width: var(--touch-target);
-      min-height: var(--touch-target);
+      min-width: 38px;
+      min-height: 38px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -279,17 +300,20 @@
       color: #dc2626;
       background: #fee2e2;
     }
+
     .empty-message {
       text-align: center;
       color: #94a3b8;
       font-style: italic;
-      padding: 2rem 0;
-      font-size: 0.95rem;
+      padding: 1.5rem 0;
+      font-size: 0.9rem;
     }
+
+    /* ===== FORMULARIO ===== */
     .add-form {
       background: white;
       border-radius: 60px;
-      padding: 0.4rem 0.4rem 0.4rem 1.2rem;
+      padding: 0.3rem 0.3rem 0.3rem 1.2rem;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -300,25 +324,25 @@
     }
     .add-form i {
       color: #94a3b8;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
     .add-form input {
       flex: 3 1 200px;
-      padding: 1rem 0.5rem;
+      padding: 0.8rem 0.5rem;
       border: none;
       outline: none;
-      font-size: 1rem;
+      font-size: 0.95rem;
       background: transparent;
       font-family: 'Inter', sans-serif;
-      min-height: var(--touch-target);
+      min-height: 44px;
     }
     .add-form input::placeholder {
       color: #aac2d6;
       font-weight: 300;
     }
     .add-form select {
-      flex: 1 1 140px;
-      padding: 0.9rem 1rem;
+      flex: 1 1 130px;
+      padding: 0.7rem 1rem;
       border: 1px solid #e2e8f0;
       border-radius: 40px;
       background: white;
@@ -327,7 +351,7 @@
       cursor: pointer;
       outline: none;
       transition: var(--transition);
-      min-height: var(--touch-target);
+      min-height: 44px;
     }
     .add-form select:hover {
       border-color: #94a3b8;
@@ -337,7 +361,7 @@
       border: none;
       color: white;
       font-weight: 600;
-      padding: 1rem 1.8rem;
+      padding: 0.8rem 1.8rem;
       border-radius: 40px;
       cursor: pointer;
       transition: var(--transition);
@@ -346,13 +370,14 @@
       gap: 0.6rem;
       letter-spacing: 0.3px;
       box-shadow: 0 6px 14px rgba(30, 41, 59, 0.25);
-      min-height: var(--touch-target);
+      min-height: 44px;
       white-space: nowrap;
     }
     .add-form button:hover {
       background: #0f172a;
       transform: scale(1.02);
     }
+
     .utility-bar {
       display: flex;
       gap: 1rem;
@@ -364,7 +389,7 @@
     .btn-outline {
       background: white;
       border: 1px solid var(--border-light);
-      padding: 0.8rem 1.5rem;
+      padding: 0.7rem 1.5rem;
       border-radius: 40px;
       font-weight: 500;
       color: var(--text-secondary);
@@ -374,7 +399,7 @@
       align-items: center;
       gap: 0.6rem;
       box-shadow: var(--shadow-sm);
-      min-height: var(--touch-target);
+      min-height: 44px;
     }
     .btn-outline:hover {
       background: #f8fafc;
@@ -389,36 +414,65 @@
       color: #94a3b8;
       text-align: right;
     }
+
+    /* ===== RESPONSIVE MÓVIL ===== */
     @media (max-width: 800px) {
       body { padding: 0.5rem; }
-      .container { padding: 1rem 1rem 1.5rem; border-radius: 24px; }
+      .container { padding: 1rem; border-radius: 24px; }
       .board { grid-template-columns: 1fr; gap: 1rem; }
-      .column { height: auto; max-height: 500px; }
-      .list-container { max-height: 280px; }
-      .header { flex-direction: column; align-items: stretch; }
+      .column {
+        height: auto;
+        max-height: 70vh;
+        min-height: 400px;
+      }
+      .list-container { max-height: 50vh; }
+      .header { flex-direction: column; align-items: stretch; gap: 0.5rem; }
       h1 { font-size: 1.6rem; justify-content: center; }
       .family-badge { align-self: center; }
-      .add-form { flex-direction: column; align-items: stretch; border-radius: 40px; padding: 1rem; gap: 0.8rem; }
+      
+      /* Formulario apilado */
+      .add-form {
+        flex-direction: column;
+        align-items: stretch;
+        border-radius: 40px;
+        padding: 1rem;
+        gap: 0.8rem;
+      }
       .add-form i { display: none; }
-      .add-form input { width: 100%; padding: 1rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 40px; background: #f9fcff; }
-      .add-form select { width: 100%; padding: 1rem; }
-      .add-form button { width: 100%; justify-content: center; padding: 1rem; }
-      .column-header { padding: 1rem 1rem 0.6rem; }
-      .column-header h2 { font-size: 1.2rem; }
-      .count-badge { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
-      .column-actions button { min-width: 48px; min-height: 48px; }
-      .item-list li { padding: 0.9rem 1rem; border-radius: 40px; }
-      .item-check { width: 1.8rem; height: 1.8rem; }
-      .item-text { font-size: 1.05rem; }
-      .delete-btn { font-size: 1.3rem; min-width: 48px; min-height: 48px; }
-      .utility-bar { flex-direction: column; align-items: stretch; }
+      .add-form input,
+      .add-form select,
+      .add-form button {
+        width: 100%;
+        padding: 0.9rem;
+      }
+      
+      /* Items ligeramente más grandes para tacto */
+      .item-list li {
+        padding: 0.7rem 1rem;
+        min-height: 52px;
+      }
+      .item-check {
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+      .delete-btn {
+        font-size: 1.1rem;
+        min-width: 48px;
+        min-height: 48px;
+      }
+      .utility-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
       .btn-outline { justify-content: center; }
       .footer-note { text-align: center; }
     }
+
+    /* Pantallas muy pequeñas */
     @media (max-width: 380px) {
       h1 { font-size: 1.4rem; }
       .column-header h2 { font-size: 1.1rem; }
-      .item-text { font-size: 0.95rem; }
+      .item-text { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -431,6 +485,7 @@
 
   <!-- Tablero de 3 columnas -->
   <div class="board">
+    <!-- Corto plazo -->
     <div class="column short" data-type="short">
       <div class="column-header">
         <h2><i class="fas fa-bolt" style="color: var(--color-short);"></i> Corto</h2>
@@ -445,6 +500,7 @@
         <div class="empty-message" id="shortEmpty">✨ Lista vacía</div>
       </div>
     </div>
+    <!-- Mediano plazo -->
     <div class="column medium" data-type="medium">
       <div class="column-header">
         <h2><i class="fas fa-seedling" style="color: var(--color-medium);"></i> Mediano</h2>
@@ -459,6 +515,7 @@
         <div class="empty-message" id="mediumEmpty">✨ Lista vacía</div>
       </div>
     </div>
+    <!-- Largo plazo -->
     <div class="column long" data-type="long">
       <div class="column-header">
         <h2><i class="fas fa-telescope" style="color: var(--color-long);"></i> Largo</h2>
@@ -475,7 +532,7 @@
     </div>
   </div>
 
-  <!-- Formulario para añadir tarea -->
+  <!-- Formulario -->
   <form class="add-form" id="addForm">
     <i class="fas fa-pencil-alt"></i>
     <input type="text" id="newItem" placeholder="Nueva tarea..." autocomplete="off">
@@ -487,16 +544,16 @@
     <button type="submit"><i class="fas fa-plus-circle"></i> Añadir</button>
   </form>
 
-  <!-- Barra de utilidades -->
+  <!-- Utilidades -->
   <div class="utility-bar">
     <button class="btn-outline" id="addSampleTasks"><i class="fas fa-flask"></i> Cargar ejemplos</button>
-    <div class="footer-note"><i class="fas fa-globe"></i> Tiempo real activado</div>
+    <div class="footer-note"><i class="fas fa-globe"></i> Tiempo real · +10 tareas visibles</div>
   </div>
 </div>
 
 <script>
   (function() {
-    // --- CONFIGURACIÓN DE FIREBASE (proporcionada por el usuario) ---
+    // --- CONFIGURACIÓN FIREBASE (misma que usaste) ---
     const firebaseConfig = {
       apiKey: "AIzaSyA0i0SZNq-C1OrjZcixGLMEdFadnw_efmE",
       authDomain: "tareas-pedroza-hernandez.firebaseapp.com",
@@ -509,12 +566,11 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Referencias a las listas en Firebase (cada una en su propia rama)
     const dbShort = database.ref('tareas/short');
     const dbMedium = database.ref('tareas/medium');
     const dbLong = database.ref('tareas/long');
 
-    // --- Referencias del DOM ---
+    // Referencias DOM
     const shortList = document.getElementById('shortList');
     const mediumList = document.getElementById('mediumList');
     const longList = document.getElementById('longList');
@@ -524,25 +580,22 @@
     const shortCount = document.getElementById('shortCount');
     const mediumCount = document.getElementById('mediumCount');
     const longCount = document.getElementById('longCount');
-
     const addForm = document.getElementById('addForm');
     const newItemInput = document.getElementById('newItem');
     const listSelector = document.getElementById('listSelector');
     const addSampleBtn = document.getElementById('addSampleTasks');
     const columns = document.querySelectorAll('.column');
 
-    // --- Utilidad: actualizar contadores y mensajes vacíos ---
     function updateListUI(listUl, countSpan, emptyDiv) {
-      const items = listUl.querySelectorAll('li:not(.empty-message)');
+      const items = listUl.querySelectorAll('li');
       const total = items.length;
       countSpan.textContent = total;
       emptyDiv.style.display = total === 0 ? 'block' : 'none';
     }
 
-    // --- Crear elemento LI con datos de Firebase ---
     function createTaskItem(id, text, checked = false) {
       const li = document.createElement('li');
-      li.dataset.id = id;  // guardamos el id de Firebase
+      li.dataset.id = id;
 
       const check = document.createElement('input');
       check.type = 'checkbox';
@@ -564,72 +617,49 @@
       return li;
     }
 
-    // --- Sincronización en tiempo real desde Firebase (cada lista escucha su propia rama) ---
     function listenToDatabase(ref, listUl, emptyDiv, countSpan) {
       ref.on('value', (snapshot) => {
-        console.log(`Actualizando lista desde ${ref.toString()}`); // LOG para depuración
         const data = snapshot.val() || {};
         listUl.innerHTML = '';
-
-        // Convertir objeto en array y ordenar por timestamp
-        const items = Object.entries(data).map(([id, tarea]) => ({
-          id,
-          ...tarea
-        }));
+        const items = Object.entries(data).map(([id, tarea]) => ({ id, ...tarea }));
         items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
         items.forEach(tarea => {
-          const li = createTaskItem(tarea.id, tarea.text, tarea.completed || false);
-          
-          // Evento cambiar checkbox
+          const li = createTaskItem(tarea.id, tarea.text, tarea.completed);
           const check = li.querySelector('.item-check');
           check.addEventListener('change', () => {
             ref.child(tarea.id).update({ completed: check.checked });
           });
-
-          // Evento eliminar
           const deleteBtn = li.querySelector('.delete-btn');
           deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             ref.child(tarea.id).remove();
           });
-
           listUl.appendChild(li);
         });
-
         updateListUI(listUl, countSpan, emptyDiv);
       });
     }
 
-    // Iniciar escuchas para cada lista
     listenToDatabase(dbShort, shortList, shortEmpty, shortCount);
     listenToDatabase(dbMedium, mediumList, mediumEmpty, mediumCount);
     listenToDatabase(dbLong, longList, longEmpty, longCount);
 
-    // --- Añadir nueva tarea ---
     addForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const text = newItemInput.value.trim();
       if (!text) return;
-
       const target = listSelector.value;
-      let ref;
-      if (target === 'short') ref = dbShort;
-      else if (target === 'medium') ref = dbMedium;
-      else ref = dbLong;
-
-      const newRef = ref.push();
-      newRef.set({
-        text: text,
+      let ref = target === 'short' ? dbShort : target === 'medium' ? dbMedium : dbLong;
+      ref.push().set({
+        text,
         completed: false,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       });
-
       newItemInput.value = '';
       newItemInput.focus();
     });
 
-    // --- Botón de ejemplos ---
     addSampleBtn.addEventListener('click', () => {
       const samples = [
         { list: dbShort, texts: ['Llamar a la abuela', 'Comprar leche', 'Pagar recibo luz'] },
@@ -638,77 +668,34 @@
       ];
       samples.forEach(({ list, texts }) => {
         texts.forEach(text => {
-          list.push().set({ 
-            text, 
-            completed: false, 
-            timestamp: firebase.database.ServerValue.TIMESTAMP 
-          });
+          list.push().set({ text, completed: false, timestamp: Date.now() });
         });
       });
     });
 
-    // --- Botones de limpiar completadas y eliminar todas (verificados) ---
     columns.forEach(col => {
       const clearCompletedBtn = col.querySelector('.clear-completed');
       const clearAllBtn = col.querySelector('.clear-all');
-      const type = col.dataset.type; // "short", "medium", "long"
-      
-      // Asignar la referencia correcta según el tipo
-      let ref;
-      if (type === 'short') ref = dbShort;
-      else if (type === 'medium') ref = dbMedium;
-      else if (type === 'long') ref = dbLong;
-      else {
-        console.error('Tipo de columna desconocido:', type);
-        return;
-      }
-
-      // Log para verificar que cada botón tiene su referencia
-      console.log(`Botón de columna ${type} apunta a:`, ref.toString());
+      const type = col.dataset.type;
+      let ref = type === 'short' ? dbShort : type === 'medium' ? dbMedium : dbLong;
 
       clearCompletedBtn.addEventListener('click', () => {
         ref.once('value').then(snapshot => {
           const updates = {};
           snapshot.forEach(child => {
-            if (child.val().completed) {
-              updates[child.key] = null; // marcar para eliminar
-            }
+            if (child.val().completed) updates[child.key] = null;
           });
           ref.update(updates);
         });
       });
 
       clearAllBtn.addEventListener('click', () => {
-        if (confirm(`¿Eliminar todas las tareas de la columna "${col.querySelector('h2').innerText}"?`)) {
-          // Eliminar toda la rama (solo esta columna)
-          ref.remove()
-            .then(() => {
-              console.log(`Rama ${type} eliminada correctamente`);
-            })
-            .catch(error => {
-              console.error('Error al eliminar:', error);
-            });
+        if (confirm(`¿Eliminar todas las tareas de "${col.querySelector('h2').innerText}"?`)) {
+          ref.remove();
         }
       });
     });
-
-    // Verificación adicional: mostrar en consola las referencias
-    console.log('Referencias Firebase:', {
-      short: dbShort.toString(),
-      medium: dbMedium.toString(),
-      long: dbLong.toString()
-    });
   })();
 </script>
-<!-- 
-  IMPORTANTE: 
-  1. Abre la consola del navegador (F12) para ver los logs y asegurarte de que cada botón apunta a la referencia correcta.
-  2. Verifica en Firebase Console (https://console.firebase.google.com) que los datos están estructurados como:
-     tareas/
-       short/
-       medium/
-       long/
-  3. Si el problema persiste, comparte lo que aparece en la consola cuando alguien borra una columna.
--->
 </body>
 </html>
