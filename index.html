@@ -14,9 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* (Mantén aquí todos los estilos que ya tienes en tu archivo Task.html, 
-       desde la línea 12 hasta la línea 392, exactamente igual) */
-    /* Por brevedad no los repito, pero debes copiarlos tal cual */
+    /* ===== ESTILOS COMPLETOS (los mismos que tenías) ===== */
     :root {
       --color-short: #f97316;
       --color-medium: #10b981;
@@ -508,11 +506,10 @@
       messagingSenderId: "197046799959",
       appId: "1:197046799959:web:f1a513e303ec0bf3ae1d12"
     };
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Referencias a las listas en Firebase (usaremos un nodo "tareas")
+    // Referencias a las listas en Firebase (cada una en su propia rama)
     const dbShort = database.ref('tareas/short');
     const dbMedium = database.ref('tareas/medium');
     const dbLong = database.ref('tareas/long');
@@ -534,7 +531,7 @@
     const addSampleBtn = document.getElementById('addSampleTasks');
     const columns = document.querySelectorAll('.column');
 
-    // --- Utilidad: actualizar contadores y mensajes vacíos (solo visual, se llama tras cambios) ---
+    // --- Utilidad: actualizar contadores y mensajes vacíos ---
     function updateListUI(listUl, countSpan, emptyDiv) {
       const items = listUl.querySelectorAll('li:not(.empty-message)');
       const total = items.length;
@@ -567,19 +564,18 @@
       return li;
     }
 
-    // --- Sincronización en tiempo real desde Firebase ---
+    // --- Sincronización en tiempo real desde Firebase (cada lista escucha su propia rama) ---
     function listenToDatabase(ref, listUl, emptyDiv, countSpan) {
       ref.on('value', (snapshot) => {
+        console.log(`Actualizando lista desde ${ref.toString()}`); // LOG para depuración
         const data = snapshot.val() || {};
-        // Limpiar lista actual
         listUl.innerHTML = '';
 
-        // Convertir objeto en array y ordenar (por ejemplo, por timestamp si existe)
+        // Convertir objeto en array y ordenar por timestamp
         const items = Object.entries(data).map(([id, tarea]) => ({
           id,
           ...tarea
         }));
-        // Ordenar por timestamp (si no tiene, se mantiene orden por id)
         items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
         items.forEach(tarea => {
@@ -601,7 +597,6 @@
           listUl.appendChild(li);
         });
 
-        // Actualizar contadores
         updateListUI(listUl, countSpan, emptyDiv);
       });
     }
@@ -611,7 +606,7 @@
     listenToDatabase(dbMedium, mediumList, mediumEmpty, mediumCount);
     listenToDatabase(dbLong, longList, longEmpty, longCount);
 
-    // --- Añadir nueva tarea (desde formulario) ---
+    // --- Añadir nueva tarea ---
     addForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const text = newItemInput.value.trim();
@@ -623,7 +618,6 @@
       else if (target === 'medium') ref = dbMedium;
       else ref = dbLong;
 
-      // Crear un nuevo ID único con push()
       const newRef = ref.push();
       newRef.set({
         text: text,
@@ -635,12 +629,12 @@
       newItemInput.focus();
     });
 
-    // --- Botón de ejemplos (añade tareas de muestra a Firebase) ---
+    // --- Botón de ejemplos ---
     addSampleBtn.addEventListener('click', () => {
       const samples = [
-        { list: dbShort, texts: ['Llamar a la abuela', 'Comprar leche', 'Pagar recibo luz', 'Cita dentista', 'Revisar correo'] },
-        { list: dbMedium, texts: ['Planificar viaje', 'Revisión coche', 'Curso de cocina', 'Donar ropa', 'Organizar archivos'] },
-        { list: dbLong, texts: ['Ahorrar para casa', 'Aprender inglés', 'Viaje a Europa', 'Renovar cocina', 'Fondo de emergencia'] }
+        { list: dbShort, texts: ['Llamar a la abuela', 'Comprar leche', 'Pagar recibo luz'] },
+        { list: dbMedium, texts: ['Planificar viaje', 'Revisión coche', 'Curso de cocina'] },
+        { list: dbLong, texts: ['Ahorrar para casa', 'Aprender inglés', 'Viaje a Europa'] }
       ];
       samples.forEach(({ list, texts }) => {
         texts.forEach(text => {
@@ -653,22 +647,31 @@
       });
     });
 
-    // --- Botones de limpiar completadas y eliminar todas (modificados para Firebase) ---
+    // --- Botones de limpiar completadas y eliminar todas (verificados) ---
     columns.forEach(col => {
       const clearCompletedBtn = col.querySelector('.clear-completed');
       const clearAllBtn = col.querySelector('.clear-all');
-      const type = col.dataset.type;
+      const type = col.dataset.type; // "short", "medium", "long"
+      
+      // Asignar la referencia correcta según el tipo
       let ref;
       if (type === 'short') ref = dbShort;
       else if (type === 'medium') ref = dbMedium;
-      else ref = dbLong;
+      else if (type === 'long') ref = dbLong;
+      else {
+        console.error('Tipo de columna desconocido:', type);
+        return;
+      }
+
+      // Log para verificar que cada botón tiene su referencia
+      console.log(`Botón de columna ${type} apunta a:`, ref.toString());
 
       clearCompletedBtn.addEventListener('click', () => {
         ref.once('value').then(snapshot => {
           const updates = {};
           snapshot.forEach(child => {
             if (child.val().completed) {
-              updates[child.key] = null; // eliminar
+              updates[child.key] = null; // marcar para eliminar
             }
           });
           ref.update(updates);
@@ -676,17 +679,36 @@
       });
 
       clearAllBtn.addEventListener('click', () => {
-        if (confirm(`¿Eliminar todas las tareas de ${col.querySelector('h2').innerText}?`)) {
-          ref.remove();
+        if (confirm(`¿Eliminar todas las tareas de la columna "${col.querySelector('h2').innerText}"?`)) {
+          // Eliminar toda la rama (solo esta columna)
+          ref.remove()
+            .then(() => {
+              console.log(`Rama ${type} eliminada correctamente`);
+            })
+            .catch(error => {
+              console.error('Error al eliminar:', error);
+            });
         }
       });
+    });
+
+    // Verificación adicional: mostrar en consola las referencias
+    console.log('Referencias Firebase:', {
+      short: dbShort.toString(),
+      medium: dbMedium.toString(),
+      long: dbLong.toString()
     });
   })();
 </script>
 <!-- 
-  Importante: Para que funcione, debes ir a Firebase Console > Realtime Database > Reglas
-  y establecer: { "rules": { ".read": true, ".write": true } } (modo prueba).
-  Luego, todos los dispositivos verán los mismos datos en tiempo real.
+  IMPORTANTE: 
+  1. Abre la consola del navegador (F12) para ver los logs y asegurarte de que cada botón apunta a la referencia correcta.
+  2. Verifica en Firebase Console (https://console.firebase.google.com) que los datos están estructurados como:
+     tareas/
+       short/
+       medium/
+       long/
+  3. Si el problema persiste, comparte lo que aparece en la consola cuando alguien borra una columna.
 -->
 </body>
 </html>
