@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Familia Pedroza Hernández · Pendientes+</title>
+  <title>Familia Pedroza Hernández · Pendientes compartidas</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Firebase SDK (versión compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* Variables de color */
+    /* (Mantén aquí todos los estilos que ya tienes en tu archivo Task.html, 
+       desde la línea 12 hasta la línea 392, exactamente igual) */
+    /* Por brevedad no los repito, pero debes copiarlos tal cual */
     :root {
       --color-short: #f97316;
       --color-medium: #10b981;
@@ -26,15 +31,9 @@
       --radius-md: 20px;
       --radius-lg: 28px;
       --transition: all 0.2s ease;
-      --touch-target: 44px; /* tamaño mínimo táctil */
+      --touch-target: 44px;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: linear-gradient(145deg, #f1f5f9 0%, #eef2f6 100%);
       font-family: 'Inter', sans-serif;
@@ -46,7 +45,6 @@
       padding: 0.75rem;
       line-height: 1.5;
     }
-
     .container {
       max-width: 1440px;
       width: 100%;
@@ -56,8 +54,6 @@
       box-shadow: var(--shadow-md), 0 0 0 1px rgba(255,255,255,0.5) inset;
       padding: 1.5rem 1.5rem 2rem;
     }
-
-    /* Cabecera */
     .header {
       display: flex;
       flex-wrap: wrap;
@@ -71,7 +67,7 @@
       align-items: center;
       gap: 0.75rem;
       font-weight: 700;
-      font-size: 1.8rem; /* ligeramente más pequeño para móvil */
+      font-size: 1.8rem;
       letter-spacing: -0.02em;
       background: linear-gradient(135deg, #1e293b, #0f172a);
       -webkit-background-clip: text;
@@ -103,16 +99,12 @@
       color: #e11d48;
       margin-right: 0.3rem;
     }
-
-    /* Tablero 3 columnas */
     .board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
       margin: 1.5rem 0 2rem;
     }
-
-    /* Tarjetas columna */
     .column {
       background: var(--card-bg);
       border-radius: var(--radius-md);
@@ -128,7 +120,6 @@
       box-shadow: var(--shadow-md);
       transform: translateY(-3px);
     }
-
     .column-header {
       padding: 1.2rem 1.2rem 0.8rem;
       border-bottom: 3px solid transparent;
@@ -151,7 +142,6 @@
     .column.short .column-header { border-bottom-color: var(--color-short); }
     .column.medium .column-header { border-bottom-color: var(--color-medium); }
     .column.long .column-header { border-bottom-color: var(--color-long); }
-
     .count-badge {
       background: #f1f5f9;
       color: var(--text-secondary);
@@ -161,7 +151,6 @@
       border-radius: 40px;
       letter-spacing: 0.3px;
     }
-
     .column-actions {
       display: flex;
       gap: 0.3rem;
@@ -173,7 +162,7 @@
       color: #94a3b8;
       cursor: pointer;
       font-size: 1rem;
-      padding: 0.4rem 0.6rem;  /* más área táctil */
+      padding: 0.4rem 0.6rem;
       border-radius: 30px;
       transition: var(--transition);
       min-width: var(--touch-target);
@@ -189,15 +178,13 @@
     .column-actions button.clear-completed:hover {
       color: #10b981;
     }
-
-    /* Lista con scroll */
     .list-container {
       flex: 1;
       overflow-y: auto;
       padding: 0.5rem 0.8rem 0.8rem;
       scrollbar-width: thin;
       scrollbar-color: #cbd5e1 #f1f5f9;
-      max-height: 300px; /* ajustado */
+      max-height: 300px;
     }
     .list-container::-webkit-scrollbar {
       width: 6px;
@@ -210,7 +197,6 @@
       background: #cbd5e1;
       border-radius: 10px;
     }
-
     .item-list {
       list-style: none;
       display: flex;
@@ -221,19 +207,18 @@
       background: #ffffff;
       border: 1px solid #e9eef3;
       border-radius: 60px;
-      padding: 0.7rem 0.8rem 0.7rem 1.2rem; /* más alto para toque */
+      padding: 0.7rem 0.8rem 0.7rem 1.2rem;
       display: flex;
       align-items: center;
       gap: 0.6rem;
       transition: var(--transition);
       box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      min-height: 52px; /* altura mínima táctil */
+      min-height: 52px;
     }
     .item-list li:hover {
       background: #fcfdff;
       border-color: #cbd5e1;
     }
-
     .item-check {
       appearance: none;
       -webkit-appearance: none;
@@ -263,10 +248,9 @@
     .item-check:hover {
       border-color: #94a3b8;
     }
-
     .item-text {
       flex: 1;
-      font-size: 1rem; /* más grande */
+      font-size: 1rem;
       font-weight: 500;
       color: var(--text-primary);
       word-break: break-word;
@@ -277,7 +261,6 @@
       text-decoration: line-through;
       color: #94a3b8;
     }
-
     .delete-btn {
       background: transparent;
       border: none;
@@ -298,7 +281,6 @@
       color: #dc2626;
       background: #fee2e2;
     }
-
     .empty-message {
       text-align: center;
       color: #94a3b8;
@@ -306,8 +288,6 @@
       padding: 2rem 0;
       font-size: 0.95rem;
     }
-
-    /* Formulario */
     .add-form {
       background: white;
       border-radius: 60px;
@@ -326,7 +306,7 @@
     }
     .add-form input {
       flex: 3 1 200px;
-      padding: 1rem 0.5rem; /* más alto */
+      padding: 1rem 0.5rem;
       border: none;
       outline: none;
       font-size: 1rem;
@@ -375,7 +355,6 @@
       background: #0f172a;
       transform: scale(1.02);
     }
-
     .utility-bar {
       display: flex;
       gap: 1rem;
@@ -412,143 +391,48 @@
       color: #94a3b8;
       text-align: right;
     }
-
-    /* ===== MEJORAS ESPECÍFICAS PARA MÓVIL ===== */
     @media (max-width: 800px) {
-      body {
-        padding: 0.5rem;
-      }
-      .container {
-        padding: 1rem 1rem 1.5rem;
-        border-radius: 24px;
-      }
-      .board {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .column {
-        height: auto;
-        max-height: 500px;
-      }
-      .list-container {
-        max-height: 280px;
-      }
-      .header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      h1 {
-        font-size: 1.6rem;
-        justify-content: center;
-      }
-      .family-badge {
-        align-self: center;
-      }
-
-      /* Formulario apilado en móvil con elementos grandes */
-      .add-form {
-        flex-direction: column;
-        align-items: stretch;
-        border-radius: 40px;
-        padding: 1rem;
-        gap: 0.8rem;
-      }
-      .add-form i {
-        display: none; /* ahorrar espacio */
-      }
-      .add-form input {
-        width: 100%;
-        padding: 1rem 0.8rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 40px;
-        background: #f9fcff;
-      }
-      .add-form select {
-        width: 100%;
-        padding: 1rem;
-      }
-      .add-form button {
-        width: 100%;
-        justify-content: center;
-        padding: 1rem;
-      }
-
-      /* Columnas: cabecera más compacta */
-      .column-header {
-        padding: 1rem 1rem 0.6rem;
-      }
-      .column-header h2 {
-        font-size: 1.2rem;
-      }
-      .count-badge {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.8rem;
-      }
-      .column-actions button {
-        min-width: 48px;
-        min-height: 48px;
-      }
-
-      /* Items de lista más altos */
-      .item-list li {
-        padding: 0.9rem 1rem;
-        border-radius: 40px;
-      }
-      .item-check {
-        width: 1.8rem;
-        height: 1.8rem;
-      }
-      .item-text {
-        font-size: 1.05rem;
-      }
-      .delete-btn {
-        font-size: 1.3rem;
-        min-width: 48px;
-        min-height: 48px;
-      }
-
-      /* Barra de utilidades */
-      .utility-bar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .btn-outline {
-        justify-content: center;
-      }
-      .footer-note {
-        text-align: center;
-      }
+      body { padding: 0.5rem; }
+      .container { padding: 1rem 1rem 1.5rem; border-radius: 24px; }
+      .board { grid-template-columns: 1fr; gap: 1rem; }
+      .column { height: auto; max-height: 500px; }
+      .list-container { max-height: 280px; }
+      .header { flex-direction: column; align-items: stretch; }
+      h1 { font-size: 1.6rem; justify-content: center; }
+      .family-badge { align-self: center; }
+      .add-form { flex-direction: column; align-items: stretch; border-radius: 40px; padding: 1rem; gap: 0.8rem; }
+      .add-form i { display: none; }
+      .add-form input { width: 100%; padding: 1rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 40px; background: #f9fcff; }
+      .add-form select { width: 100%; padding: 1rem; }
+      .add-form button { width: 100%; justify-content: center; padding: 1rem; }
+      .column-header { padding: 1rem 1rem 0.6rem; }
+      .column-header h2 { font-size: 1.2rem; }
+      .count-badge { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
+      .column-actions button { min-width: 48px; min-height: 48px; }
+      .item-list li { padding: 0.9rem 1rem; border-radius: 40px; }
+      .item-check { width: 1.8rem; height: 1.8rem; }
+      .item-text { font-size: 1.05rem; }
+      .delete-btn { font-size: 1.3rem; min-width: 48px; min-height: 48px; }
+      .utility-bar { flex-direction: column; align-items: stretch; }
+      .btn-outline { justify-content: center; }
+      .footer-note { text-align: center; }
     }
-
-    /* Ajuste para pantallas muy pequeñas (menos de 380px) */
     @media (max-width: 380px) {
-      h1 {
-        font-size: 1.4rem;
-      }
-      .column-header h2 {
-        font-size: 1.1rem;
-      }
-      .item-text {
-        font-size: 0.95rem;
-      }
+      h1 { font-size: 1.4rem; }
+      .column-header h2 { font-size: 1.1rem; }
+      .item-text { font-size: 0.95rem; }
     }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>
-      <i class="fas fa-clipboard-list"></i> 
-      Pendientes · Pedroza Hernández
-    </h1>
-    <div class="family-badge">
-      <i class="fas fa-heart"></i> Familia unida
-    </div>
+    <h1><i class="fas fa-clipboard-list"></i> Pendientes · Pedroza Hernández</h1>
+    <div class="family-badge"><i class="fas fa-heart"></i> Familia unida</div>
   </div>
 
   <!-- Tablero de 3 columnas -->
   <div class="board">
-    <!-- Corto plazo -->
     <div class="column short" data-type="short">
       <div class="column-header">
         <h2><i class="fas fa-bolt" style="color: var(--color-short);"></i> Corto</h2>
@@ -563,7 +447,6 @@
         <div class="empty-message" id="shortEmpty">✨ Lista vacía</div>
       </div>
     </div>
-    <!-- Mediano plazo -->
     <div class="column medium" data-type="medium">
       <div class="column-header">
         <h2><i class="fas fa-seedling" style="color: var(--color-medium);"></i> Mediano</h2>
@@ -578,7 +461,6 @@
         <div class="empty-message" id="mediumEmpty">✨ Lista vacía</div>
       </div>
     </div>
-    <!-- Largo plazo -->
     <div class="column long" data-type="long">
       <div class="column-header">
         <h2><i class="fas fa-telescope" style="color: var(--color-long);"></i> Largo</h2>
@@ -610,15 +492,32 @@
   <!-- Barra de utilidades -->
   <div class="utility-bar">
     <button class="btn-outline" id="addSampleTasks"><i class="fas fa-flask"></i> Cargar ejemplos</button>
-    <div class="footer-note">
-      <i class="fas fa-infinity"></i> +100 items por lista · scroll
-    </div>
+    <div class="footer-note"><i class="fas fa-globe"></i> Tiempo real activado</div>
   </div>
 </div>
 
 <script>
   (function() {
-    // Listas y contadores
+    // --- CONFIGURACIÓN DE FIREBASE (proporcionada por el usuario) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0i0SZNq-C1OrjZcixGLMEdFadnw_efmE",
+      authDomain: "tareas-pedroza-hernandez.firebaseapp.com",
+      databaseURL: "https://tareas-pedroza-hernandez-default-rtdb.firebaseio.com",
+      projectId: "tareas-pedroza-hernandez",
+      storageBucket: "tareas-pedroza-hernandez.firebasestorage.app",
+      messagingSenderId: "197046799959",
+      appId: "1:197046799959:web:f1a513e303ec0bf3ae1d12"
+    };
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Referencias a las listas en Firebase (usaremos un nodo "tareas")
+    const dbShort = database.ref('tareas/short');
+    const dbMedium = database.ref('tareas/medium');
+    const dbLong = database.ref('tareas/long');
+
+    // --- Referencias del DOM ---
     const shortList = document.getElementById('shortList');
     const mediumList = document.getElementById('mediumList');
     const longList = document.getElementById('longList');
@@ -629,13 +528,13 @@
     const mediumCount = document.getElementById('mediumCount');
     const longCount = document.getElementById('longCount');
 
-    const columns = document.querySelectorAll('.column');
     const addForm = document.getElementById('addForm');
     const newItemInput = document.getElementById('newItem');
     const listSelector = document.getElementById('listSelector');
     const addSampleBtn = document.getElementById('addSampleTasks');
+    const columns = document.querySelectorAll('.column');
 
-    // Actualizar UI (contador y mensaje vacío)
+    // --- Utilidad: actualizar contadores y mensajes vacíos (solo visual, se llama tras cambios) ---
     function updateListUI(listUl, countSpan, emptyDiv) {
       const items = listUl.querySelectorAll('li:not(.empty-message)');
       const total = items.length;
@@ -643,20 +542,15 @@
       emptyDiv.style.display = total === 0 ? 'block' : 'none';
     }
 
-    function updateAllLists() {
-      updateListUI(shortList, shortCount, shortEmpty);
-      updateListUI(mediumList, mediumCount, mediumEmpty);
-      updateListUI(longList, longCount, longEmpty);
-    }
-
-    // Crear ítem de tarea
-    function createTaskItem(text, checked = false) {
+    // --- Crear elemento LI con datos de Firebase ---
+    function createTaskItem(id, text, checked = false) {
       const li = document.createElement('li');
+      li.dataset.id = id;  // guardamos el id de Firebase
 
       const check = document.createElement('input');
       check.type = 'checkbox';
       check.classList.add('item-check');
-      if (checked) check.checked = true;
+      check.checked = checked;
 
       const textSpan = document.createElement('span');
       textSpan.classList.add('item-text');
@@ -667,103 +561,132 @@
       deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
       deleteBtn.setAttribute('aria-label', 'Eliminar tarea');
 
-      deleteBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        li.remove();
-        updateAllLists();
-      });
-
       li.appendChild(check);
       li.appendChild(textSpan);
       li.appendChild(deleteBtn);
       return li;
     }
 
-    function addItemToList(targetListUl, text) {
-      if (!text || text.trim() === '') return;
-      const cleanText = text.trim();
-      const newTask = createTaskItem(cleanText, false);
-      targetListUl.appendChild(newTask);
-      updateAllLists();
-    }
+    // --- Sincronización en tiempo real desde Firebase ---
+    function listenToDatabase(ref, listUl, emptyDiv, countSpan) {
+      ref.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        // Limpiar lista actual
+        listUl.innerHTML = '';
 
-    // Ejemplos
-    function addSampleTasks() {
-      const samples = [
-        { list: shortList, texts: ['Llamar a la abuela', 'Comprar leche', 'Pagar recibo luz', 'Cita dentista', 'Revisar correo', 'Sacar basura', 'Médico niños'] },
-        { list: mediumList, texts: ['Planificar viaje', 'Revisión coche', 'Curso de cocina', 'Donar ropa', 'Organizar archivos', 'Comprar regalo cumple'] },
-        { list: longList, texts: ['Ahorrar para casa', 'Aprender inglés', 'Viaje a Europa', 'Renovar cocina', 'Fondo de emergencia', 'Leer 12 libros'] }
-      ];
-      samples.forEach(s => {
-        s.texts.forEach(txt => addItemToList(s.list, txt));
+        // Convertir objeto en array y ordenar (por ejemplo, por timestamp si existe)
+        const items = Object.entries(data).map(([id, tarea]) => ({
+          id,
+          ...tarea
+        }));
+        // Ordenar por timestamp (si no tiene, se mantiene orden por id)
+        items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        items.forEach(tarea => {
+          const li = createTaskItem(tarea.id, tarea.text, tarea.completed || false);
+          
+          // Evento cambiar checkbox
+          const check = li.querySelector('.item-check');
+          check.addEventListener('change', () => {
+            ref.child(tarea.id).update({ completed: check.checked });
+          });
+
+          // Evento eliminar
+          const deleteBtn = li.querySelector('.delete-btn');
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            ref.child(tarea.id).remove();
+          });
+
+          listUl.appendChild(li);
+        });
+
+        // Actualizar contadores
+        updateListUI(listUl, countSpan, emptyDiv);
       });
-      for (let i = 0; i < 5; i++) {
-        addItemToList(shortList, `Tarea extra ${i+1}`);
-      }
     }
 
-    // Evento formulario
-    addForm.addEventListener('submit', function(e) {
+    // Iniciar escuchas para cada lista
+    listenToDatabase(dbShort, shortList, shortEmpty, shortCount);
+    listenToDatabase(dbMedium, mediumList, mediumEmpty, mediumCount);
+    listenToDatabase(dbLong, longList, longEmpty, longCount);
+
+    // --- Añadir nueva tarea (desde formulario) ---
+    addForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const text = newItemInput.value;
-      if (!text.trim()) return;
+      const text = newItemInput.value.trim();
+      if (!text) return;
 
-      const targetId = listSelector.value;
-      let targetList;
-      if (targetId === 'short') targetList = shortList;
-      else if (targetId === 'medium') targetList = mediumList;
-      else targetList = longList;
+      const target = listSelector.value;
+      let ref;
+      if (target === 'short') ref = dbShort;
+      else if (target === 'medium') ref = dbMedium;
+      else ref = dbLong;
 
-      addItemToList(targetList, text);
+      // Crear un nuevo ID único con push()
+      const newRef = ref.push();
+      newRef.set({
+        text: text,
+        completed: false,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+
       newItemInput.value = '';
       newItemInput.focus();
     });
 
-    // Botón ejemplos
-    addSampleBtn.addEventListener('click', function() {
-      addSampleTasks();
+    // --- Botón de ejemplos (añade tareas de muestra a Firebase) ---
+    addSampleBtn.addEventListener('click', () => {
+      const samples = [
+        { list: dbShort, texts: ['Llamar a la abuela', 'Comprar leche', 'Pagar recibo luz', 'Cita dentista', 'Revisar correo'] },
+        { list: dbMedium, texts: ['Planificar viaje', 'Revisión coche', 'Curso de cocina', 'Donar ropa', 'Organizar archivos'] },
+        { list: dbLong, texts: ['Ahorrar para casa', 'Aprender inglés', 'Viaje a Europa', 'Renovar cocina', 'Fondo de emergencia'] }
+      ];
+      samples.forEach(({ list, texts }) => {
+        texts.forEach(text => {
+          list.push().set({ 
+            text, 
+            completed: false, 
+            timestamp: firebase.database.ServerValue.TIMESTAMP 
+          });
+        });
+      });
     });
 
-    // Acciones de columna (limpiar completadas / todas)
+    // --- Botones de limpiar completadas y eliminar todas (modificados para Firebase) ---
     columns.forEach(col => {
       const clearCompletedBtn = col.querySelector('.clear-completed');
       const clearAllBtn = col.querySelector('.clear-all');
-      const listUl = col.querySelector('.item-list');
       const type = col.dataset.type;
+      let ref;
+      if (type === 'short') ref = dbShort;
+      else if (type === 'medium') ref = dbMedium;
+      else ref = dbLong;
 
-      clearCompletedBtn.addEventListener('click', function() {
-        const items = listUl.querySelectorAll('li');
-        items.forEach(li => {
-          const chk = li.querySelector('.item-check');
-          if (chk && chk.checked) li.remove();
+      clearCompletedBtn.addEventListener('click', () => {
+        ref.once('value').then(snapshot => {
+          const updates = {};
+          snapshot.forEach(child => {
+            if (child.val().completed) {
+              updates[child.key] = null; // eliminar
+            }
+          });
+          ref.update(updates);
         });
-        updateAllLists();
       });
 
-      clearAllBtn.addEventListener('click', function() {
+      clearAllBtn.addEventListener('click', () => {
         if (confirm(`¿Eliminar todas las tareas de ${col.querySelector('h2').innerText}?`)) {
-          listUl.innerHTML = '';
-          updateAllLists();
+          ref.remove();
         }
       });
     });
-
-    // Inicializar con ejemplos
-    addSampleTasks();
-    setTimeout(updateAllLists, 10);
   })();
 </script>
-
 <!-- 
-  Mejoras táctiles para móvil:
-  - Todos los botones tienen altura mínima de 44px (estándar accesibilidad).
-  - Items de lista más altos (52px) y con padding generoso.
-  - Formulario adaptable: en móvil se apila verticalmente y los campos ocupan todo el ancho.
-  - Checkbox más grande (1.8rem) para fácil pulsación.
-  - Espaciado general aumentado en móvil.
-  - Tipografía ligeramente más grande en móvil para lectura cómoda.
-  - Mensajes de vacío y contadores bien visibles.
-  - Se mantiene la capacidad de manejar cientos de items gracias al scroll.
+  Importante: Para que funcione, debes ir a Firebase Console > Realtime Database > Reglas
+  y establecer: { "rules": { ".read": true, ".write": true } } (modo prueba).
+  Luego, todos los dispositivos verán los mismos datos en tiempo real.
 -->
 </body>
 </html>
