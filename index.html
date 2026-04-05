@@ -1,40 +1,853 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Familia Pedroza Hernández · Pendientes compartidas</title>
-  <!-- Favicon: emoji de clipboard -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='https://i.imgur.com/NIAP7uM.png' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
-  <!-- Google Fonts -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Familia Pedroza Hernández · Metas y Mercado</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    /* ===== VARIABLES Y RESET ===== */
-    :root {
-      --color-short: #f97316;
-      --color-medium: #10b981;
-      --color-long: #3b82f6;
-      --bg-light: #f8fafc;
-      --card-bg: #ffffff;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --border-light: #e2e8f0;
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 12px 28px rgba(0, 30, 50, 0.08);
-      --radius-md: 20px;
-      --radius-lg: 28px;
-      --transition: all 0.2s ease;
-      --touch-target: 44px;
+    :root{
+      --bg:#eef2f7;
+      --card:#fff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --shadow:0 10px 24px rgba(15,23,42,.06);
+      --shadow2:0 18px 40px rgba(15,23,42,.08);
+      --radius:18px;
+      --radius2:24px;
+      --accent:#0f172a;
+      --short:#f97316;
+      --medium:#10b981;
+      --long:#3b82f6;
+      --buy:#8b5cf6;
+      --ok:#16a34a;
+      --danger:#dc2626;
+      --transition:.18s ease;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Inter',sans-serif;
+      background:linear-gradient(145deg,#f7f9fc 0%,#edf2f7 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:10px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      line-height:1.35;
+    }
+    .container{
+      width:100%;
+      max-width:1500px;
+      background:rgba(255,255,255,.78);
+      backdrop-filter:blur(4px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:var(--radius2);
+      box-shadow:var(--shadow2);
+      padding:14px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    h1{
+      font-size:1.35rem;
+      letter-spacing:-.03em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      line-height:1.1;
+    }
+    h1 i{
+      width:38px;height:38px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:#fff;
+      box-shadow:var(--shadow);
+      color:var(--accent);
+      font-size:1.05rem;
+      flex:0 0 auto;
+    }
+    .family-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 14px;
+      border-radius:999px;
+      background:#fff;
+      color:var(--muted);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      font-size:.9rem;
+      white-space:nowrap;
+    }
+    .family-badge i{color:#e11d48}
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .tab-btn{
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--muted);
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:600;
+      cursor:pointer;
+      transition:var(--transition);
+      min-height:40px;
+    }
+    .tab-btn.active{
+      color:#fff;
+      background:var(--accent);
+      border-color:var(--accent);
+      box-shadow:0 10px 22px rgba(15,23,42,.14);
+    }
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .quick-form{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:10px;
+      display:grid;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .meta-form{grid-template-columns:1.2fr .8fr auto}
+    .market-form{grid-template-columns:1fr 1fr auto}
+    .quick-form input,.quick-form select,.mini-form input{
+      width:100%;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:12px;
+      padding:11px 12px;
+      outline:none;
+      font:inherit;
+      min-height:42px;
+    }
+    .quick-form input::placeholder,.mini-form input::placeholder{color:#94a3b8}
+    .quick-form button,.mini-form button{
+      border:0;
+      background:var(--accent);
+      color:#fff;
+      border-radius:12px;
+      padding:0 14px;
+      font-weight:600;
+      cursor:pointer;
+      transition:var(--transition);
+      min-height:42px;
+      white-space:nowrap;
+    }
+    .quick-form button:hover,.mini-form button:hover{transform:translateY(-1px);opacity:.96}
+
+    .board{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      align-items:stretch;
+    }
+    .column{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      min-height:460px;
+      max-height:68vh;
+      overflow:hidden;
+    }
+    .column-header,.group-header{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      justify-content:space-between;
+      padding:10px 10px 8px;
+      border-bottom:1px solid var(--border);
+    }
+    .column-title,.group-title{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:1rem;
+      font-weight:700;
+      min-width:0;
+    }
+    .column-title span,.group-title span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .count-badge{
+      font-size:.72rem;
+      font-weight:700;
+      color:var(--muted);
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:4px 9px;
+      flex:0 0 auto;
+    }
+    .header-actions,.mini-actions{
+      display:flex;
+      gap:4px;
+      flex:0 0 auto;
+    }
+    .icon-btn{
+      width:34px;height:34px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:#94a3b8;
+      border-radius:10px;
+      cursor:pointer;
+      transition:var(--transition);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+    .icon-btn:hover{background:#f8fafc;color:var(--accent);transform:translateY(-1px)}
+    .icon-btn.danger:hover{background:#fee2e2;color:var(--danger)}
+    .icon-btn.ok:hover{background:#dcfce7;color:var(--ok)}
+
+    .list-container{
+      flex:1;
+      overflow:auto;
+      padding:8px;
+    }
+    .item-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .item{
+      background:#fff;
+      border:1px solid #edf2f7;
+      border-radius:14px;
+      padding:8px 8px 8px 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-height:44px;
+    }
+    .item:hover{border-color:#cbd5e1}
+    .check{
+      appearance:none;
+      -webkit-appearance:none;
+      width:18px;height:18px;
+      border:2px solid #cbd5e1;
+      border-radius:999px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+      background:#fff;
+    }
+    .check:checked{background:var(--ok);border-color:var(--ok)}
+    .check:checked::after{
+      content:"\f00c";
+      font-family:"Font Awesome 6 Free";
+      font-weight:900;
+      color:#fff;
+      font-size:.65rem;
+    }
+    .text{
+      flex:1;
+      min-width:0;
+      font-size:.92rem;
+      font-weight:500;
+      word-break:break-word;
+    }
+    .check:checked ~ .text{
+      text-decoration:line-through;
+      color:#94a3b8;
     }
 
-    * {
+    .empty{
+      color:#94a3b8;
+      text-align:center;
+      padding:16px 8px;
+      font-size:.9rem;
+      font-style:italic;
+    }
+
+    .market-top{
+      margin-bottom:12px;
+    }
+    .market-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:10px;
+      align-items:start;
+    }
+    .group-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:260px;
+    }
+    .group-sub{
+      padding:8px 10px 0;
+      color:var(--muted);
+      font-size:.78rem;
+    }
+    .group-body{padding:8px 10px 10px}
+    .mini-form{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .mini-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .mini-item{
+      background:#fff;
+      border:1px solid #edf2f7;
+      border-radius:14px;
+      padding:8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-height:42px;
+    }
+    .mini-item .text{font-size:.9rem}
+    .mini-item .meta-actions,.item .meta-actions{
+      display:flex;
+      gap:4px;
+      flex:0 0 auto;
+    }
+    .small-btn{
+      width:32px;height:32px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:10px;
+      color:#94a3b8;
+      cursor:pointer;
+      transition:var(--transition);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+    .small-btn:hover{background:#f8fafc;color:var(--accent)}
+    .small-btn.danger:hover{background:#fee2e2;color:var(--danger)}
+    .small-btn.ok:hover{background:#dcfce7;color:var(--ok)}
+
+    .market-empty{
+      padding:12px;
+      color:#94a3b8;
+      text-align:center;
+      font-size:.9rem;
+      font-style:italic;
+    }
+
+    .list-container::-webkit-scrollbar{width:6px}
+    .list-container::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+    .list-container::-webkit-scrollbar-track{background:#f8fafc}
+
+    @media (max-width: 980px){
+      .board{grid-template-columns:1fr}
+      .column{max-height:none;min-height:0}
+      .meta-form,.market-form{grid-template-columns:1fr}
+      .market-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 560px){
+      body{padding:6px}
+      .container{padding:10px;border-radius:18px}
+      h1{font-size:1.12rem}
+      h1 i{width:34px;height:34px}
+      .family-badge{width:100%;justify-content:center}
+      .tabs{gap:6px}
+      .tab-btn{flex:1 1 auto;padding:9px 12px}
+      .column-header,.group-header{padding:9px}
+      .group-body,.list-container{padding:8px}
+      .item,.mini-item{padding:8px}
+      .icon-btn,.small-btn{width:32px;height:32px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1><i class="fas fa-clipboard-list"></i> Pedroza Hernández</h1>
+      <div class="family-badge"><i class="fas fa-heart"></i> Familia unida</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-target="metasSection">Metas</button>
+      <button class="tab-btn" data-target="marketSection">Mercado</button>
+    </div>
+
+    <section id="metasSection" class="panel active">
+      <form class="quick-form meta-form" id="addForm">
+        <input type="text" id="newItem" placeholder="Nueva tarea..." autocomplete="off">
+        <select id="listSelector">
+          <option value="short">Corto plazo</option>
+          <option value="medium">Mediano plazo</option>
+          <option value="long">Largo plazo</option>
+        </select>
+        <button type="submit"><i class="fas fa-plus"></i> Añadir</button>
+      </form>
+
+      <div class="board">
+        <div class="column" data-type="short">
+          <div class="column-header">
+            <div class="column-title"><i class="fas fa-bolt" style="color:var(--short)"></i><span>Corto</span></div>
+            <span class="count-badge" id="shortCount">0</span>
+            <div class="header-actions">
+              <button class="icon-btn ok clear-completed" title="Eliminar completadas"><i class="fas fa-check-double"></i></button>
+              <button class="icon-btn danger clear-all" title="Eliminar todas"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+          <div class="list-container">
+            <ul class="item-list" id="shortList"></ul>
+            <div class="empty" id="shortEmpty">Lista vacía</div>
+          </div>
+        </div>
+
+        <div class="column" data-type="medium">
+          <div class="column-header">
+            <div class="column-title"><i class="fas fa-seedling" style="color:var(--medium)"></i><span>Mediano</span></div>
+            <span class="count-badge" id="mediumCount">0</span>
+            <div class="header-actions">
+              <button class="icon-btn ok clear-completed" title="Eliminar completadas"><i class="fas fa-check-double"></i></button>
+              <button class="icon-btn danger clear-all" title="Eliminar todas"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+          <div class="list-container">
+            <ul class="item-list" id="mediumList"></ul>
+            <div class="empty" id="mediumEmpty">Lista vacía</div>
+          </div>
+        </div>
+
+        <div class="column" data-type="long">
+          <div class="column-header">
+            <div class="column-title"><i class="fas fa-telescope" style="color:var(--long)"></i><span>Largo</span></div>
+            <span class="count-badge" id="longCount">0</span>
+            <div class="header-actions">
+              <button class="icon-btn ok clear-completed" title="Eliminar completadas"><i class="fas fa-check-double"></i></button>
+              <button class="icon-btn danger clear-all" title="Eliminar todas"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+          <div class="list-container">
+            <ul class="item-list" id="longList"></ul>
+            <div class="empty" id="longEmpty">Lista vacía</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="marketSection" class="panel">
+      <form class="quick-form market-form" id="marketForm">
+        <input type="text" id="marketGroupInput" placeholder="Sitio / grupo (Ej: Éxito, D1, Jumbo)" autocomplete="off">
+        <input type="text" id="marketItemInput" placeholder="Producto a comprar" autocomplete="off">
+        <button type="submit"><i class="fas fa-cart-shopping"></i> Añadir</button>
+      </form>
+
+      <div class="market-grid" id="marketGroups"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const firebaseConfig = {
+        apiKey: "AIzaSyA0i0SZNq-C1OrjZcixGLMEdFadnw_efmE",
+        authDomain: "tareas-pedroza-hernandez.firebaseapp.com",
+        databaseURL: "https://tareas-pedroza-hernandez-default-rtdb.firebaseio.com",
+        projectId: "tareas-pedroza-hernandez",
+        storageBucket: "tareas-pedroza-hernandez.firebasestorage.app",
+        messagingSenderId: "197046799959",
+        appId: "1:197046799959:web:f1a513e303ec0bf3ae1d12"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      const dbShort = database.ref("tareas/short");
+      const dbMedium = database.ref("tareas/medium");
+      const dbLong = database.ref("tareas/long");
+      const dbMarket = database.ref("mercado/groups");
+
+      const els = {
+        tabs: document.querySelectorAll(".tab-btn"),
+        panels: document.querySelectorAll(".panel"),
+
+        addForm: document.getElementById("addForm"),
+        newItem: document.getElementById("newItem"),
+        listSelector: document.getElementById("listSelector"),
+
+        shortList: document.getElementById("shortList"),
+        mediumList: document.getElementById("mediumList"),
+        longList: document.getElementById("longList"),
+        shortEmpty: document.getElementById("shortEmpty"),
+        mediumEmpty: document.getElementById("mediumEmpty"),
+        longEmpty: document.getElementById("longEmpty"),
+        shortCount: document.getElementById("shortCount"),
+        mediumCount: document.getElementById("mediumCount"),
+        longCount: document.getElementById("longCount"),
+
+        marketForm: document.getElementById("marketForm"),
+        marketGroupInput: document.getElementById("marketGroupInput"),
+        marketItemInput: document.getElementById("marketItemInput"),
+        marketGroups: document.getElementById("marketGroups")
+      };
+
+      const refs = {
+        short: dbShort,
+        medium: dbMedium,
+        long: dbLong
+      };
+
+      const state = {
+        short: { ref: dbShort, list: els.shortList, empty: els.shortEmpty, count: els.shortCount },
+        medium: { ref: dbMedium, list: els.mediumList, empty: els.mediumEmpty, count: els.mediumCount },
+        long: { ref: dbLong, list: els.longList, empty: els.longEmpty, count: els.longCount }
+      };
+
+      const normalize = (v) => (v || "").trim().toLowerCase();
+
+      const orderedEntries = (obj) =>
+        Object.entries(obj || {})
+          .map(([id, value]) => ({ id, ...value }))
+          .sort((a, b) => (a.order ?? a.timestamp ?? 0) - (b.order ?? b.timestamp ?? 0));
+
+      const esc = (text) => String(text ?? "");
+
+      function switchTab(targetId) {
+        els.tabs.forEach(btn => btn.classList.toggle("active", btn.dataset.target === targetId));
+        els.panels.forEach(panel => panel.classList.toggle("active", panel.id === targetId));
+      }
+
+      els.tabs.forEach(btn => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.target));
+      });
+
+      function makeIconBtn(icon, title, extraClass = "") {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `small-btn ${extraClass}`.trim();
+        btn.title = title;
+        btn.innerHTML = `<i class="fas ${icon}"></i>`;
+        return btn;
+      }
+
+      async function moveSibling(parentRef, items, index, dir) {
+        const otherIndex = index + dir;
+        if (otherIndex < 0 || otherIndex >= items.length) return;
+        const a = items[index];
+        const b = items[otherIndex];
+        const aOrder = a.order ?? index;
+        const bOrder = b.order ?? otherIndex;
+
+        await Promise.all([
+          parentRef.child(a.id).update({ order: bOrder }),
+          parentRef.child(b.id).update({ order: aOrder })
+        ]);
+      }
+
+      function renderTaskColumn(key, snapshot) {
+        const { ref, list, empty, count } = state[key];
+        const items = orderedEntries(snapshot.val());
+        list.innerHTML = "";
+
+        count.textContent = items.length;
+        empty.style.display = items.length ? "none" : "block";
+
+        items.forEach((item, index) => {
+          const li = document.createElement("li");
+          li.className = "item";
+
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.className = "check";
+          check.checked = !!item.completed;
+          check.addEventListener("change", () => {
+            ref.child(item.id).update({ completed: check.checked });
+          });
+
+          const text = document.createElement("span");
+          text.className = "text";
+          text.textContent = esc(item.text);
+
+          const actions = document.createElement("div");
+          actions.className = "meta-actions";
+
+          const editBtn = makeIconBtn("fa-pen", "Editar");
+          editBtn.addEventListener("click", async () => {
+            const next = prompt("Editar tarea:", item.text || "");
+            if (next !== null && next.trim()) {
+              await ref.child(item.id).update({ text: next.trim() });
+            }
+          });
+
+          const upBtn = makeIconBtn("fa-arrow-up", "Subir");
+          upBtn.addEventListener("click", () => moveSibling(ref, items, index, -1));
+
+          const downBtn = makeIconBtn("fa-arrow-down", "Bajar");
+          downBtn.addEventListener("click", () => moveSibling(ref, items, index, 1));
+
+          const delBtn = makeIconBtn("fa-trash-alt", "Eliminar", "danger");
+          delBtn.addEventListener("click", () => ref.child(item.id).remove());
+
+          actions.append(editBtn, upBtn, downBtn, delBtn);
+          li.append(check, text, actions);
+          list.appendChild(li);
+        });
+      }
+
+      dbShort.on("value", snap => renderTaskColumn("short", snap));
+      dbMedium.on("value", snap => renderTaskColumn("medium", snap));
+      dbLong.on("value", snap => renderTaskColumn("long", snap));
+
+      els.addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = els.newItem.value.trim();
+        if (!text) return;
+
+        const ref = refs[els.listSelector.value];
+        await ref.push().set({
+          text,
+          completed: false,
+          order: Date.now(),
+          timestamp: Date.now()
+        });
+
+        els.addForm.reset();
+        els.newItem.focus();
+      });
+
+      document.querySelectorAll(".column").forEach(col => {
+        const type = col.dataset.type;
+        const ref = refs[type];
+
+        col.querySelector(".clear-completed").addEventListener("click", async () => {
+          const snap = await ref.once("value");
+          const updates = {};
+          snap.forEach(child => {
+            if (child.val().completed) updates[child.key] = null;
+          });
+          if (Object.keys(updates).length) await ref.update(updates);
+        });
+
+        col.querySelector(".clear-all").addEventListener("click", async () => {
+          if (confirm(`¿Eliminar todas las tareas de ${type}?`)) {
+            await ref.remove();
+          }
+        });
+      });
+
+      async function findGroupByName(name) {
+        const snap = await dbMarket.once("value");
+        let found = null;
+        snap.forEach(child => {
+          const data = child.val() || {};
+          if (normalize(data.name) === normalize(name)) found = { id: child.key, ...data };
+        });
+        return found;
+      }
+
+      async function addProductToGroup(groupId, productText) {
+        const itemsRef = dbMarket.child(groupId).child("items");
+        await itemsRef.push().set({
+          text: productText,
+          done: false,
+          order: Date.now(),
+          timestamp: Date.now()
+        });
+      }
+
+      els.marketForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const groupName = els.marketGroupInput.value.trim();
+        const productText = els.marketItemInput.value.trim();
+        if (!groupName || !productText) return;
+
+        const existing = await findGroupByName(groupName);
+
+        if (existing) {
+          await addProductToGroup(existing.id, productText);
+        } else {
+          const newGroup = dbMarket.push();
+          await newGroup.set({
+            name: groupName,
+            order: Date.now(),
+            createdAt: Date.now(),
+            items: {}
+          });
+          await addProductToGroup(newGroup.key, productText);
+        }
+
+        els.marketForm.reset();
+        els.marketGroupInput.focus();
+      });
+
+      function renderMarket(snapshot) {
+        const groups = orderedEntries(snapshot.val());
+        els.marketGroups.innerHTML = "";
+
+        if (!groups.length) {
+          const empty = document.createElement("div");
+          empty.className = "market-empty";
+          empty.textContent = "Sin grupos de mercado todavía.";
+          els.marketGroups.appendChild(empty);
+          return;
+        }
+
+        groups.forEach((group, groupIndex) => {
+          const card = document.createElement("article");
+          card.className = "group-card";
+
+          const header = document.createElement("div");
+          header.className = "group-header";
+
+          const titleWrap = document.createElement("div");
+          titleWrap.className = "group-title";
+          titleWrap.innerHTML = `<i class="fas fa-store" style="color:var(--buy)"></i><span>${esc(group.name)}</span>`;
+
+          const count = document.createElement("span");
+          count.className = "count-badge";
+          const productItems = orderedEntries(group.items);
+          count.textContent = productItems.length;
+
+          const actions = document.createElement("div");
+          actions.className = "header-actions";
+
+          const upBtn = makeIconBtn("fa-arrow-up", "Subir grupo");
+          upBtn.addEventListener("click", () => moveSibling(dbMarket, groups, groupIndex, -1));
+
+          const downBtn = makeIconBtn("fa-arrow-down", "Bajar grupo");
+          downBtn.addEventListener("click", () => moveSibling(dbMarket, groups, groupIndex, 1));
+
+          const editBtn = makeIconBtn("fa-pen", "Editar sitio");
+          editBtn.addEventListener("click", async () => {
+            const next = prompt("Editar sitio / grupo:", group.name || "");
+            if (next !== null && next.trim()) {
+              await dbMarket.child(group.id).update({ name: next.trim() });
+            }
+          });
+
+          const delBtn = makeIconBtn("fa-trash-alt", "Eliminar grupo", "danger");
+          delBtn.addEventListener("click", async () => {
+            if (confirm(`¿Eliminar el grupo "${group.name}" completo?`)) {
+              await dbMarket.child(group.id).remove();
+            }
+          });
+
+          actions.append(upBtn, downBtn, editBtn, delBtn);
+          header.append(titleWrap, count, actions);
+
+          const body = document.createElement("div");
+          body.className = "group-body";
+
+          const miniForm = document.createElement("form");
+          miniForm.className = "mini-form";
+          miniForm.innerHTML = `
+            <input type="text" placeholder="Añadir producto..." autocomplete="off">
+            <button type="submit"><i class="fas fa-plus"></i></button>
+          `;
+
+          miniForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = miniForm.querySelector("input");
+            const text = input.value.trim();
+            if (!text) return;
+            await addProductToGroup(group.id, text);
+            input.value = "";
+            input.focus();
+          });
+
+          const sub = document.createElement("div");
+          sub.className = "group-sub";
+          sub.textContent = "Productos de compra";
+
+          const list = document.createElement("ul");
+          list.className = "mini-list";
+
+          if (!productItems.length) {
+            const empty = document.createElement("div");
+            empty.className = "market-empty";
+            empty.textContent = "Sin productos.";
+            body.append(miniForm, sub, empty);
+          } else {
+            productItems.forEach((item, index) => {
+              const li = document.createElement("li");
+              li.className = "mini-item";
+
+              const check = document.createElement("input");
+              check.type = "checkbox";
+              check.className = "check";
+              check.checked = !!item.done;
+              check.addEventListener("change", () => {
+                dbMarket.child(group.id).child("items").child(item.id).update({ done: check.checked });
+              });
+
+              const text = document.createElement("span");
+              text.className = "text";
+              text.textContent = esc(item.text);
+
+              const actions = document.createElement("div");
+              actions.className = "meta-actions";
+
+              const editBtn = makeIconBtn("fa-pen", "Editar");
+              editBtn.addEventListener("click", async () => {
+                const next = prompt("Editar producto:", item.text || "");
+                if (next !== null && next.trim()) {
+                  await dbMarket.child(group.id).child("items").child(item.id).update({ text: next.trim() });
+                }
+              });
+
+              const upBtn = makeIconBtn("fa-arrow-up", "Subir");
+              upBtn.addEventListener("click", () => moveSibling(dbMarket.child(group.id).child("items"), productItems, index, -1));
+
+              const downBtn = makeIconBtn("fa-arrow-down", "Bajar");
+              downBtn.addEventListener("click", () => moveSibling(dbMarket.child(group.id).child("items"), productItems, index, 1));
+
+              const delBtn = makeIconBtn("fa-trash-alt", "Eliminar", "danger");
+              delBtn.addEventListener("click", () => dbMarket.child(group.id).child("items").child(item.id).remove());
+
+              actions.append(editBtn, upBtn, downBtn, delBtn);
+              li.append(check, text, actions);
+              list.appendChild(li);
+            });
+
+            body.append(miniForm, sub, list);
+          }
+
+          card.append(header, body);
+          els.marketGroups.appendChild(card);
+        });
+      }
+
+      dbMarket.on("value", renderMarket);
+    })();
+  </script>
+</body>
+</html>    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
